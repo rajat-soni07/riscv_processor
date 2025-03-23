@@ -3,3 +3,4 @@
 
 # Team Members
 - Rajat Soni (2023CS10229)
+- Krish Bhimani (2023CS10712)
