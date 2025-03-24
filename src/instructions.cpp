@@ -14,8 +14,10 @@ public:
     int avl; // for forwarding (Rd value) 0-available after IF, 1-available after ID, 2-available after EX, 3-available after MEM, 4-available after WB
 
 
+    Instruction(){
 
-    Instruction(long long int code){
+    }
+    void build_instruction(long long int code){
         int opcode=extract(code,0,6);
         if(opcode==51){
             //R type
@@ -218,7 +220,7 @@ public:
 
 
 // int main(){
-//     Instruction ins(0x00312023);
+//     Instruction ins(0x00a28333);
 //     std::cout<<ins.operation<<std::endl;
 //     std::cout<<ins.reg1<<std::endl;
 //     std::cout<<ins.reg2<<std::endl;
