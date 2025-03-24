@@ -37,27 +37,32 @@ public:
         wb_out.data = 0;
     }
 
-    void instruction_fetch(IF_OUT* s){
+    void instruction_fetch(){
         return;
     }
 
-    void instruction_decode(ID_OUT* s){
+    void instruction_decode(){
         return;
     }
 
-    void execution_stage(EX_OUT* s){
+    void execution_stage(){
         return;
     }
 
-    void memory_operation(MEM_OUT* s){
+    void memory_operation(){
         return;
     }
 
-    void write_back(WB_OUT* s){
+    void write_back(){
         return;
     }
 
     void simulate_clock_cycle(){
+        instruction_fetch();
+        instruction_decode();
+        execution_stage();
+        memory_operation();
+        write_back();
         return;
     }
 };
