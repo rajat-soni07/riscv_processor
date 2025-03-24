@@ -21,7 +21,7 @@ std::vector<std::vector<std::string>> read_file(std::string filename) {
         while(line[i]==' '){i++;}
         std::string operation;
         
-        operation=line.substr(i);
+        while(line[i]!='\r' && line[i]!='\0'){operation+=line[i];i++;}
         temp.push_back(operation);
         out.push_back(temp);
        
