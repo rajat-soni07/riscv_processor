@@ -267,25 +267,27 @@ public:
         return temp;
     }
 
+    std::vector<int> simulate_clock_cycle_forwarding(){return simulate_clock_cycle_nonforwarding();}
+    
 };
 
 
-int main(){
+// int main(){
 
-    Processor p(read_file("../inputfiles/strlen.txt"));
-    std::vector<int> temp=p.simulate_clock_cycle_nonforwarding();
-    for(auto c:temp){
-        std::cout<<c<<" ";
-    }
-    std::cout<<std::endl;
-    for (int i = 0; i < 8; i++)
-    {
-        temp=p.simulate_clock_cycle_nonforwarding();
-        for(auto c:temp){
-            std::cout<<c<<" ";
-        }
-        std::cout<<std::endl;
-    }
+//     Processor p(read_file("../inputfiles/strlen.txt"));
+//     std::vector<int> temp=p.simulate_clock_cycle_nonforwarding();
+//     for(auto c:temp){
+//         std::cout<<c<<" ";
+//     }
+//     std::cout<<std::endl;
+//     for (int i = 0; i < 8; i++)
+//     {
+//         temp=p.simulate_clock_cycle_nonforwarding();
+//         for(auto c:temp){
+//             std::cout<<c<<" ";
+//         }
+//         std::cout<<std::endl;
+//     }
     
     
-}
+// }
