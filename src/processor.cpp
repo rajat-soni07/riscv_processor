@@ -1,7 +1,11 @@
 #include <iostream>
+#include <map>
+#include "registers.cpp"
+#include "memory.cpp"
 
 struct IF_OUT{
-    int data;
+    int pc;
+    std::string inst;
 };
 
 struct ID_OUT{
@@ -22,15 +26,18 @@ struct WB_OUT{
 
 class Processor{
 private:
+    std::map <int,std::string> inst;
+    Memory mem;
+    Register reg;
+public:
     IF_OUT if_out;
     ID_OUT id_out;
     EX_OUT ex_out;
     MEM_OUT mem_out;
     WB_OUT wb_out;
 
-public:
     Processor(){
-        if_out.data = 0;
+        if_out.pc = 0;
         id_out.data = 0;
         ex_out.data = 0;
         mem_out.data = 0;
@@ -38,6 +45,8 @@ public:
     }
 
     void instruction_fetch(){
+        if_out.inst = inst[if_out.pc];
+        if_out.pc+=4;
         return;
     }
 
@@ -59,10 +68,15 @@ public:
 
     void simulate_clock_cycle(){
         instruction_fetch();
+
+        // WB is written before ID because it occurs in the first half of cycle where as ID occurs in second half.
+        write_back();
         instruction_decode();
+
         execution_stage();
         memory_operation();
-        write_back();
         return;
+
+        // This function should return the program counter of operation at which the stage is currently on.
     }
 };
