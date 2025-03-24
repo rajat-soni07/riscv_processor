@@ -2,10 +2,11 @@
 #include <map>
 #include "registers.cpp"
 #include "memory.cpp"
+#include "instructions.cpp"
+#include "input.cpp"
 
 struct IF_OUT{
     int pc;
-    std::string inst;
 };
 
 struct ID_OUT{
@@ -26,7 +27,7 @@ struct WB_OUT{
 
 class Processor{
 private:
-    std::map <int,std::string> inst;
+    std::map <int,Instruction> inst;
     Memory mem;
     Register reg;
 public:
@@ -36,7 +37,14 @@ public:
     MEM_OUT mem_out;
     WB_OUT wb_out;
 
-    Processor(){
+    Processor(std::vector<std::vector<std::string>> inp){
+        int pc = 0;
+        for (auto& instruction : inp) {
+            Instruction inst_obj(std::stoll("0x" + instruction[1], nullptr, 16));
+            inst[pc] = inst_obj;
+            pc+=4;
+        }
+
         if_out.pc = 0;
         id_out.data = 0;
         ex_out.data = 0;
@@ -45,7 +53,7 @@ public:
     }
 
     void instruction_fetch(){
-        if_out.inst = inst[if_out.pc];
+        // if_out.inst=inst[if_out.pc];
         if_out.pc+=4;
         return;
     }

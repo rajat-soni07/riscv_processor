@@ -1,5 +1,5 @@
-#include <bits/stdc++.h>
-using namespace std;
+#include <iostream>
+
 int extract(int n, int i, int j) {
     return (((1 << (j - i + 1)) - 1) & (n >> i));
 }
@@ -9,7 +9,7 @@ public:
     int reg1;
     int reg2;
     int rd;
-    string operation;
+    std::string operation;
     int imm;
     int avl; // for forwarding (Rd value) 0-available after IF, 1-available after ID, 2-available after EX, 3-available after MEM, 4-available after WB
 
@@ -220,12 +220,12 @@ public:
 };
 
 
-int main(){
-    Instruction ins(0x00030303);
-    cout<<ins.operation<<endl;
-    cout<<ins.reg1<<endl;
-    cout<<ins.reg2<<endl;
-    cout<<ins.rd<<endl;
-    cout<<ins.imm<<endl;
-    return 0;
-}
+// int main(){
+//     Instruction ins(0x00030303);
+//     cout<<ins.operation<<endl;
+//     cout<<ins.reg1<<endl;
+//     cout<<ins.reg2<<endl;
+//     cout<<ins.rd<<endl;
+//     cout<<ins.imm<<endl;
+//     return 0;
+// }
