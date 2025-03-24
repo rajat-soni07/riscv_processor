@@ -38,6 +38,25 @@ public:
         return;
     }
 
+    void update_from_ind(int i,int val){
+        if (i>=0 && i<32){
+            reg[i] = val;
+        }
+        else{
+            throw std::out_of_range("No such registers exists");
+        }
+        return;
+    }
+
+    int fetch_from_ind(int i){
+        if (i>=0 && i<32){
+            return reg[i];
+        }
+        else{
+            throw std::out_of_range("No such registers exists");
+        }
+    }
+
     int fetch(std::string r){
         auto tmp = indexes.find(r);
         if (tmp!=indexes.end()){

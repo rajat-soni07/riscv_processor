@@ -125,9 +125,6 @@ public:
             else if(funct3==2){
                 operation="lw";
             }
-            else if(funct3==4){
-                operation="lbu";
-            }
             else if(funct3==5){
                 operation="lhu";
             }
@@ -221,11 +218,11 @@ public:
 
 
 // int main(){
-//     Instruction ins(0x00030303);
-//     cout<<ins.operation<<endl;
-//     cout<<ins.reg1<<endl;
-//     cout<<ins.reg2<<endl;
-//     cout<<ins.rd<<endl;
-//     cout<<ins.imm<<endl;
+//     Instruction ins(0x00312023);
+//     std::cout<<ins.operation<<std::endl;
+//     std::cout<<ins.reg1<<std::endl;
+//     std::cout<<ins.reg2<<std::endl;
+//     std::cout<<ins.rd<<std::endl;
+//     std::cout<<ins.imm<<std::endl;
 //     return 0;
 // }
