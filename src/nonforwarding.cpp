@@ -7,6 +7,10 @@ int main(int argc, char const *argv[])
     string input_path = argv[1]; 
     int cycle_count = atoi(argv[2]);
 
+    // string input_path = "../inputfiles/strlen.txt";
+    // int cycle_count = 8;
+
+
     int pos = input_path.find_last_of("/");
     string file_name = input_path.substr(pos + 1);
     string output_name = "";
@@ -22,29 +26,40 @@ int main(int argc, char const *argv[])
 
     Processor processor(insts);
     
-    vector<vector<string>> output(insts.size(), vector<string>(cycle_count, ""));
+    vector<vector<string>> output(insts.size(), vector<string>(cycle_count, "   "));
+    vector<int> last(insts.size(), -1);
+    string labels[5] = {"IF ", "ID ", "EX ", "MEM", "WB "};
 
     for (int i = 0; i < cycle_count; i++)
     {
         vector<int> temp = processor.simulate_clock_cycle_nonforwarding();
-        if (temp[0] != -1) {if (i>=1 && (output[temp[0]/4][i-1]=="-" || output[temp[0]/4][i-1] == "IF")) {output[temp[0]/4][i] = "-";} else {output[temp[0]/4][i] = "IF";}}
-        if (temp[1] != -1) {if (i>=1 && (output[temp[0]/4][i-1]=="-" || output[temp[1]/4][i-1] == "ID")) {output[temp[1]/4][i] = "-";} else {output[temp[1]/4][i] = "ID";}}
-        if (temp[2] != -1) {if (i>=1 && (output[temp[0]/4][i-1]=="-" || output[temp[2]/4][i-1] == "EX")) {output[temp[2]/4][i] = "-";} else {output[temp[2]/4][i] = "EX";}}
-        if (temp[3] != -1) {if (i>=1 && (output[temp[0]/4][i-1]=="-" || output[temp[3]/4][i-1] == "MEM")) {output[temp[3]/4][i] = "-";} else {output[temp[3]/4][i] = "MEM";}}
-        if (temp[4] != -1) {if (i>=1 && (output[temp[0]/4][i-1]=="-" || output[temp[4]/4][i-1] == "WB")) {output[temp[4]/4][i] = "-";} else {output[temp[4]/4][i] = "WB";}}
+        for (int j = 0; j < 5; j++)
+        {
+           
+            if (temp[j] != -1) {
+                if (j==last[temp[j]/4]){
+                    output[temp[j]/4][i] = "-  ";
+                }else{
+                    output[temp[j]/4][i] = labels[j];
+                }
+            }
+            last[temp[j]/4] = j;
+        }
+        
+       
     }
 
     
     ofstream output_file("../outputfiles/"+output_name+"_noforward_out.txt");
     streambuf *cout_buf = cout.rdbuf();
     cout.rdbuf(output_file.rdbuf());
-
+    
     for (int i = 0; i < insts.size(); i++)
     {
-        cout << insts[i][1];
+        cout << insts[i][1] << string(20 - insts[i][1].size(), ' ');
         for (int j = 0; j < cycle_count; j++)
         {
-            cout << ";" <<output[i][j];
+            cout << "\t;" <<output[i][j];
         }
         cout << endl;
     }
