@@ -229,12 +229,7 @@ public:
             }}
         }
 
-        if(mem_out.pc!=-1){
-            mem_out.pc=-1; 
-        }
-        if(ex_out.pc!=-1){
-            ex_out.pc=-1;
-        }
+
         if(stalled==false){
             if(id_out.pc!=-1){
                 ex_in = id_out;id_out.pc=-1;
@@ -247,6 +242,7 @@ public:
             id_in.machinecode=id_out.machinecode;
             id_in.pc=id_out.pc;
         }
+        if_out.pc=-1;id_out.pc=-1;ex_out.pc=-1;mem_out.pc=-1;
         std::vector<int> temp;
 
         if(4*inst.size()>pc_global){
@@ -267,27 +263,93 @@ public:
         return temp;
     }
 
-    std::vector<int> simulate_clock_cycle_forwarding(){return simulate_clock_cycle_nonforwarding();}
-    
+
+    std::vector<int> simulate_clock_cycle_forwarding(){
+
+        wb_in.pc=-1;mem_in.pc=-1;ex_in.pc=-1;id_in.pc=-1;
+        if(mem_out.pc!=-1){
+            // mem out always goes to wb
+            wb_in = mem_out; 
+        }
+        bool stalled=false;
+        // check for stall in EX
+        int rs1 = ex_out.inst.reg1; int rs2 = ex_out.inst.reg2;
+        if(mem_out.pc!=-1 && ((rs1!=-1 && rs1==mem_out.inst.rd)||(rs2!=-1 && rs2==mem_out.inst.rd))){
+            if(mem_out.inst.operation=="lw" || mem_out.inst.operation=="lh" || mem_out.inst.operation=="lb" || mem_out.inst.operation=="lhu"){
+                stalled = true;
+                
+                ex_in.pc=ex_out.pc;
+            }
+            else{
+                // the instruction have completed EX
+                mem_in=ex_out;
+            }
+        }
+        else{
+            mem_in=ex_out;
+        }
+
+        if(stalled==false){
+            int rs1=id_out.inst.reg1; int rs2=id_out.inst.reg2;
+            if((rs1!=-1 && rs1==ex_out.inst.rd)||(rs2!=-1 && rs2==ex_out.inst.rd)){
+                if((rs1!=-1 && rs1==ex_out.inst.rd)){id_out.source1=ex_out.data;}
+                else{id_out.source2=ex_out.data;}
+                ex_in=id_out;
+
+            }
+            else if((rs1!=-1 && rs1==mem_out.inst.rd)||(rs2!=-1 && rs2==mem_out.inst.rd)){
+                if((rs1!=-1 && rs1==mem_out.inst.rd)){id_out.source1=mem_out.data;}
+                else{id_out.source2=mem_out.data;}
+                ex_in=id_out;
+            }
+            else{
+                ex_in=id_out;
+            }
+
+            id_in=if_out;
+
+        }
+      
+        if_out.pc=-1;id_out.pc=-1;ex_out.pc=-1;mem_out.pc=-1;
+        std::vector<int> temp;
+        // std::cout<<stalled<<std::endl;
+        if(4*inst.size()>pc_global){
+            temp.push_back(pc_global);
+            
+            instruction_fetch();
+            pc_global+=4;
+        }
+        else{
+            temp.push_back(-1);
+        }
+
+        if(id_in.pc!=-1){instruction_decode();temp.push_back(id_in.pc);}else{id_out.pc=-1;temp.push_back(-1);}
+        if(ex_in.pc!=-1){execution_stage();temp.push_back(ex_in.pc);}else{ex_out.pc=-1;temp.push_back(-1);}
+        if(mem_in.pc!=-1){memory_operation();temp.push_back(mem_in.pc);}else{mem_out.pc=-1;temp.push_back(-1);}
+        if(wb_in.pc!=-1){write_back();temp.push_back(wb_in.pc);}else{wb_in.pc=-1;temp.push_back(-1);}
+
+        return temp;
+        
+    }
+
 };
 
 
 // int main(){
 
 //     Processor p(read_file("../inputfiles/strlen.txt"));
-//     std::vector<int> temp=p.simulate_clock_cycle_nonforwarding();
+//     std::vector<int> temp=p.simulate_clock_cycle_forwarding();
 //     for(auto c:temp){
 //         std::cout<<c<<" ";
 //     }
 //     std::cout<<std::endl;
-//     for (int i = 0; i < 8; i++)
+//     for (int i = 0; i < 16; i++)
 //     {
-//         temp=p.simulate_clock_cycle_nonforwarding();
+//         temp=p.simulate_clock_cycle_forwarding();
 //         for(auto c:temp){
 //             std::cout<<c<<" ";
 //         }
 //         std::cout<<std::endl;
 //     }
-    
     
 // }
