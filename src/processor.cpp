@@ -271,25 +271,29 @@ public:
             // mem out always goes to wb
             wb_in = mem_out; 
         }
-        bool stalled=false;
-        // check for stall in EX
-        int rs1 = ex_out.inst.reg1; int rs2 = ex_out.inst.reg2;
-        if(mem_out.pc!=-1 && ((rs1!=-1 && rs1==mem_out.inst.rd)||(rs2!=-1 && rs2==mem_out.inst.rd))){
-            if(mem_out.inst.operation=="lw" || mem_out.inst.operation=="lh" || mem_out.inst.operation=="lb" || mem_out.inst.operation=="lhu"){
+        if(ex_out.pc!=-1){
+            mem_in = ex_out;
+        }
+        bool stalled=false; //stalling happens in ID if it cannot forward correct values to EX
+        // check for stall in ID
+        int rs1 = id_out.inst.reg1; int rs2 = id_out.inst.reg2;
+        if(ex_out.pc!=-1 && ((rs1!=-1 && rs1==ex_out.inst.rd)||(rs2!=-1 && rs2==ex_out.inst.rd))){
+            if(ex_out.inst.operation=="lw" || ex_out.inst.operation=="lh" || ex_out.inst.operation=="lb" || ex_out.inst.operation=="lhu"){
                 stalled = true;
-                
-                ex_in.pc=ex_out.pc;
+                id_in.machinecode=id_out.machinecode;
+                id_in.pc=id_out.pc;
             }
             else{
-                // the instruction have completed EX
-                mem_in=ex_out;
+                // the instruction can be passed to EX
+                ex_in=id_out;
             }
         }
         else{
-            mem_in=ex_out;
+            ex_in=id_out;
         }
 
         if(stalled==false){
+            
             int rs1=id_out.inst.reg1; int rs2=id_out.inst.reg2;
             if((rs1!=-1 && rs1==ex_out.inst.rd)||(rs2!=-1 && rs2==ex_out.inst.rd)){
                 if((rs1!=-1 && rs1==ex_out.inst.rd)){id_out.source1=ex_out.data;}
