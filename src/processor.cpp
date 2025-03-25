@@ -98,26 +98,28 @@ public:
         
         if (opcode==99){
             if (id_out.inst.operation=="beq"){
-                if (id_out.source1 == id_out.source2){pc_global = id_in.pc + id_out.inst.imm;}else{pc_global = pc_global + 0;}
+                if (id_out.source1 == id_out.source2){pc_global = id_in.pc + id_out.inst.imm;}else{pc_global = id_in.pc+4;}
             }
             else if(id_out.inst.operation == "bne"){
-                if (id_out.source1 != id_out.source2){pc_global = id_in.pc + id_out.inst.imm;}else{pc_global = pc_global + 0;}
+                if (id_out.source1 != id_out.source2)
+                {pc_global = id_in.pc + id_out.inst.imm;}
+                else{pc_global = id_in.pc+4;}
             }
             else if(id_out.inst.operation == "blt"){
-                if (id_out.source1 < id_out.source2){pc_global = id_in.pc + id_out.inst.imm;}else{pc_global = pc_global + 0;}
+                if (id_out.source1 < id_out.source2){pc_global = id_in.pc + id_out.inst.imm;}else{pc_global = id_in.pc + 4;;}
             }
             else if(id_out.inst.operation == "bge"){
-                if (id_out.source1 >= id_out.source2){pc_global = id_in.pc + id_out.inst.imm;}else{pc_global = pc_global + 0;}
+                if (id_out.source1 >= id_out.source2){pc_global = id_in.pc + id_out.inst.imm;}else{pc_global = id_in.pc + 4;;}
             }
             else if(id_out.inst.operation == "bltu"){
                 unsigned int a = ((unsigned int) id_out.source1);
                 unsigned int b = ((unsigned int) id_out.source2);
-                if (a < b){pc_global = id_in.pc + id_out.inst.imm;}else{pc_global = pc_global + 0;}
+                if (a < b){pc_global = id_in.pc + id_out.inst.imm;}else{pc_global = id_in.pc + 4;;}
             }
             else if(id_out.inst.operation == "bgeu"){
                 unsigned int a = ((unsigned int) id_out.source1);
                 unsigned int b = ((unsigned int) id_out.source2);
-                if (a >= b){pc_global = id_in.pc  + id_out.inst.imm;}else{pc_global = pc_global + 0;}
+                if (a >= b){pc_global = id_in.pc  + id_out.inst.imm;}else{pc_global = id_in.pc + 4;;}
             
             }
         }
@@ -329,10 +331,10 @@ public:
 
 
         id_out.pc=-1;ex_out.pc=-1;mem_out.pc=-1;
+        if(wb_in.pc!=-1){write_back();}
         if(id_in.pc!=-1){instruction_decode();}
         if(ex_in.pc!=-1){execution_stage();}
         if(mem_in.pc!=-1){memory_operation();}
-        if(wb_in.pc!=-1){write_back();}
         temp.push_back(id_in.pc);temp.push_back(ex_in.pc);temp.push_back(mem_in.pc);temp.push_back(wb_in.pc);
         return temp;
     }
@@ -437,10 +439,10 @@ public:
 
 
         id_out.pc=-1;ex_out.pc=-1;mem_out.pc=-1;
+        if(wb_in.pc!=-1){write_back();}
         if(id_in.pc!=-1){instruction_decode();}
         if(ex_in.pc!=-1){execution_stage();}
         if(mem_in.pc!=-1){memory_operation();}
-        if(wb_in.pc!=-1){write_back();}
         temp.push_back(id_in.pc);temp.push_back(ex_in.pc);temp.push_back(mem_in.pc);temp.push_back(wb_in.pc);
         return temp;
         
@@ -449,21 +451,21 @@ public:
 };
 
 
-int main(){
+// int main(){
 
-    Processor p(read_file("../inputfiles/strlen.txt"));
-    std::vector<int> temp=p.simulate_clock_cycle_forwarding();
-    for(auto c:temp){
-        std::cout<<c<<" ";
-    }
-    std::cout<<std::endl;
-    for (int i = 0; i < 5; i++)
-    {
-        temp=p.simulate_clock_cycle_forwarding();
-        for(auto c:temp){
-            std::cout<<c<<" ";
-        }
-        std::cout<<std::endl;
-    }
+//     Processor p(read_file("../inputfiles/strlen.txt"));
+//     std::vector<int> temp=p.simulate_clock_cycle_nonforwarding();
+//     for(auto c:temp){
+//         std::cout<<c<<" ";
+//     }
+//     std::cout<<std::endl;
+//     for (int i = 0; i < 100; i++)
+//     {
+//         temp=p.simulate_clock_cycle_nonforwarding();
+//         for(auto c:temp){
+//             std::cout<<c<<" ";
+//         }
+//         std::cout<<std::endl;
+//     }
     
-}
+// }

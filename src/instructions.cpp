@@ -181,7 +181,7 @@ public:
             // std::cout << "imm4_1: " << std::bitset<4>(imm4_1) << std::endl;
             imm=(imm12<<10)+(imm10_5<<4)+(imm4_1);
             // std::cout << "imm: " << std::bitset<11>(imm) << std::endl;
-            std::cout<<imm<<std::endl;
+            // std::cout<<imm<<std::endl;
             imm = extract_signed(imm,0,10);
             imm*=2;
             if(funct3==0){
