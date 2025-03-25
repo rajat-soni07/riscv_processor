@@ -93,8 +93,38 @@ public:
         if (id_out.inst.reg2!=-1){
             id_out.source2 = reg.fetch_from_ind(id_out.inst.reg2);
         }
-        return;
-    }
+
+        int opcode = extract(id_out.machinecode,0,6);
+        
+        if (opcode==99){
+            if (id_out.inst.operation=="beq"){
+                if (id_out.source1 == id_out.source2){pc_global = pc_global + id_out.inst.imm;}else{pc_global = pc_global + 4;}
+            }
+            else if(id_out.inst.operation == "bne"){
+                if (id_out.source1 != id_out.source2){pc_global = pc_global + id_out.inst.imm;}else{pc_global = pc_global + 4;}
+            }
+            else if(id_out.inst.operation == "blt"){
+                if (id_out.source1 < id_out.source2){pc_global = pc_global + id_out.inst.imm;}else{pc_global = pc_global + 4;}
+            }
+            else if(id_out.inst.operation == "bge"){
+                if (id_out.source1 >= id_out.source2){pc_global = pc_global + id_out.inst.imm;}else{pc_global = pc_global + 4;}
+            }
+            else if(id_out.inst.operation == "bltu"){
+                unsigned int a = ((unsigned int) id_out.source1);
+                unsigned int b = ((unsigned int) id_out.source2);
+                if (a < b){pc_global = pc_global + id_out.inst.imm;}else{pc_global = pc_global + 4;}
+            }
+            else if(id_out.inst.operation == "bgeu"){
+                unsigned int a = ((unsigned int) id_out.source1);
+                unsigned int b = ((unsigned int) id_out.source2);
+                if (a >= b){pc_global = pc_global + id_out.inst.imm;}else{pc_global = pc_global + 4;}
+            
+            }
+        }
+         return;   
+        }
+       
+    
 
     void execution_stage(){
         int opcode = extract(ex_in.machinecode,0,6);
