@@ -353,8 +353,34 @@ public:
         }
         bool stalled=false; //stalling happens in ID if it cannot forward correct values to EX
         // check for stall in ID
+
+
+
         int rs1 = id_out.inst.reg1; int rs2 = id_out.inst.reg2;
-        if(ex_out.pc!=-1 && ((rs1!=-1 && rs1==ex_out.inst.rd)||(rs2!=-1 && rs2==ex_out.inst.rd))){
+        if(extract(id_out.machinecode,0,6)==99){
+            // if branch instruction can't use correct values in ID,stall
+            if(ex_out.pc!=-1 && ((rs1!=-1 && rs1==ex_out.inst.rd)||(rs2!=-1 && rs2==ex_out.inst.rd) && ((extract(ex_out.machinecode,0,6)==19) || ((extract(ex_out.machinecode,0,6)==51)) || ((extract(ex_out.machinecode,0,6)==3))))){
+                stalled = true;
+                id_in.machinecode=id_out.machinecode;
+                id_in.pc=id_out.pc;
+                if((extract(ex_out.machinecode,0,6)==19) || ((extract(ex_out.machinecode,0,6)==51)) ){
+                    reg.update_from_ind(ex_out.inst.rd,ex_out.data);
+                }
+            }
+            else if(mem_out.pc!=-1 && (((rs1!=-1 && rs1==mem_out.inst.rd)||(rs2!=-1 && rs2==mem_out.inst.rd)) && ((extract(mem_out.machinecode,0,6)==3)))){
+                stalled = true;
+                id_in.machinecode=id_out.machinecode;
+                id_in.pc=id_out.pc;
+
+                    reg.update_from_ind(mem_out.inst.rd,mem_out.data);
+
+            }
+            else{
+                ex_in=id_out;
+            }
+
+        }
+        else if(ex_out.pc!=-1 && ((rs1!=-1 && rs1==ex_out.inst.rd)||(rs2!=-1 && rs2==ex_out.inst.rd))){
             if(ex_out.inst.operation=="lw" || ex_out.inst.operation=="lh" || ex_out.inst.operation=="lb" || ex_out.inst.operation=="lhu"){
                 stalled = true;
                 id_in.machinecode=id_out.machinecode;
@@ -455,14 +481,14 @@ public:
 // int main(){
 
 //     Processor p(read_file("../inputfiles/strlen.txt"));
-//     std::vector<int> temp=p.simulate_clock_cycle_nonforwarding();
+//     std::vector<int> temp=p.simulate_clock_cycle_forwarding();
 //     for(auto c:temp){
 //         std::cout<<c<<" ";
 //     }
 //     std::cout<<std::endl;
 //     for (int i = 0; i < 100; i++)
 //     {
-//         temp=p.simulate_clock_cycle_nonforwarding();
+//         temp=p.simulate_clock_cycle_forwarding();
 //         for(auto c:temp){
 //             std::cout<<c<<" ";
 //         }
