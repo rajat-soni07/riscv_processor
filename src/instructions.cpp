@@ -168,6 +168,7 @@ public:
             reg1=rs1;
             reg2=rs2;
             imm=(imm12<<12)+(imm10_5<<5)+imm4_1;
+            // imm*=2;
             if(funct3==0){
                 operation="beq";
             }

@@ -98,28 +98,31 @@ public:
         
         if (opcode==99){
             if (id_out.inst.operation=="beq"){
-                if (id_out.source1 == id_out.source2){pc_global = pc_global + id_out.inst.imm;}else{pc_global = pc_global + 4;}
+                if (id_out.source1 == id_out.source2){pc_global = id_in.pc + id_out.inst.imm;}else{pc_global = pc_global + 0;}
             }
             else if(id_out.inst.operation == "bne"){
-                if (id_out.source1 != id_out.source2){pc_global = pc_global + id_out.inst.imm;}else{pc_global = pc_global + 4;}
+                if (id_out.source1 != id_out.source2){pc_global = id_in.pc + id_out.inst.imm;}else{pc_global = pc_global + 0;}
             }
             else if(id_out.inst.operation == "blt"){
-                if (id_out.source1 < id_out.source2){pc_global = pc_global + id_out.inst.imm;}else{pc_global = pc_global + 4;}
+                if (id_out.source1 < id_out.source2){pc_global = id_in.pc + id_out.inst.imm;}else{pc_global = pc_global + 0;}
             }
             else if(id_out.inst.operation == "bge"){
-                if (id_out.source1 >= id_out.source2){pc_global = pc_global + id_out.inst.imm;}else{pc_global = pc_global + 4;}
+                if (id_out.source1 >= id_out.source2){pc_global = id_in.pc + id_out.inst.imm;}else{pc_global = pc_global + 0;}
             }
             else if(id_out.inst.operation == "bltu"){
                 unsigned int a = ((unsigned int) id_out.source1);
                 unsigned int b = ((unsigned int) id_out.source2);
-                if (a < b){pc_global = pc_global + id_out.inst.imm;}else{pc_global = pc_global + 4;}
+                if (a < b){pc_global = id_in.pc + id_out.inst.imm;}else{pc_global = pc_global + 0;}
             }
             else if(id_out.inst.operation == "bgeu"){
                 unsigned int a = ((unsigned int) id_out.source1);
                 unsigned int b = ((unsigned int) id_out.source2);
-                if (a >= b){pc_global = pc_global + id_out.inst.imm;}else{pc_global = pc_global + 4;}
+                if (a >= b){pc_global = id_in.pc  + id_out.inst.imm;}else{pc_global = pc_global + 0;}
             
             }
+        }
+        else{
+            pc_global+=0;
         }
          return;   
         }
@@ -235,6 +238,7 @@ public:
     std::vector<int> simulate_clock_cycle_nonforwarding(){
         // stall only possible in ID stage
         // Reg values fetched by ID are always used in nonforwarding
+        std::vector<int> temp;
         wb_in.pc=-1;mem_in.pc=-1;ex_in.pc=-1;id_in.pc=-1;
         if(mem_out.pc!=-1){
             wb_in = mem_out; 
@@ -256,46 +260,83 @@ public:
             if(wb_in.pc!=-1 && (rs1==wb_in.inst.rd||rs2==wb_in.inst.rd)){
                 if(rs1==wb_in.inst.rd){id_out.source1=mem_out.data;}
                 else{id_out.source2=mem_out.data;}
-            }}
+            }
         }
-
+        }
+        
 
         if(stalled==false){
             if(id_out.pc!=-1){
-                ex_in = id_out;id_out.pc=-1;
+                ex_in = id_out;
             }
             if(if_out.pc!=-1){
-                id_in = if_out;if_out.pc=-1;
+                id_in = if_out;
             }
         }
         else{
             id_in.machinecode=id_out.machinecode;
             id_in.pc=id_out.pc;
         }
-        if_out.pc=-1;id_out.pc=-1;ex_out.pc=-1;mem_out.pc=-1;
-        std::vector<int> temp;
+        bool no_if_thiscycle=false;
+        bool id_has_branch=false;
+        if(id_in.pc!=-1 && extract(id_in.machinecode,0,6)==99){
+            id_has_branch=true;
+        }
 
-        if(4*inst.size()>pc_global){
-            temp.push_back(pc_global);
-            
-            instruction_fetch();
-            pc_global+=4;
+
+    if(if_out.pc==-1){
+        if(pc_global>=4*input.size()){
+            no_if_thiscycle=true;
         }
         else{
-            temp.push_back(-1);
+            if(id_has_branch){
+                no_if_thiscycle=true;
+            }
+            else{
+                instruction_fetch();
+                temp.push_back(pc_global);
+                pc_global+=4;
+            }
+            
         }
+    }
+    else{
+        if(stalled){
+            no_if_thiscycle=false;
+            temp.push_back(if_out.pc);
+        }
+        else{
+            if(id_has_branch){
+                no_if_thiscycle=true;
+            }
+            else if(pc_global>=4*input.size()){
+                no_if_thiscycle=true;
+            }
+            else{
+                instruction_fetch();
+                temp.push_back(pc_global);
+                pc_global+=4;
+            }
+        }
+    }
+    if(no_if_thiscycle){
+        temp.push_back(-1);
+        if_out.pc=-1;
+    }
 
-        if(id_in.pc!=-1){instruction_decode();temp.push_back(id_in.pc);}else{id_out.pc=-1;temp.push_back(-1);}
-        if(ex_in.pc!=-1){execution_stage();temp.push_back(ex_in.pc);}else{ex_out.pc=-1;temp.push_back(-1);}
-        if(mem_in.pc!=-1){memory_operation();temp.push_back(mem_in.pc);}else{mem_out.pc=-1;temp.push_back(-1);}
-        if(wb_in.pc!=-1){write_back();temp.push_back(wb_in.pc);}else{wb_in.pc=-1;temp.push_back(-1);}
 
+        id_out.pc=-1;ex_out.pc=-1;mem_out.pc=-1;
+        if(id_in.pc!=-1){instruction_decode();}
+        if(ex_in.pc!=-1){execution_stage();}
+        if(mem_in.pc!=-1){memory_operation();}
+        if(wb_in.pc!=-1){write_back();}
+        temp.push_back(id_in.pc);temp.push_back(ex_in.pc);temp.push_back(mem_in.pc);temp.push_back(wb_in.pc);
         return temp;
     }
 
 
     std::vector<int> simulate_clock_cycle_forwarding(){
-
+        std::vector<int> temp;
         wb_in.pc=-1;mem_in.pc=-1;ex_in.pc=-1;id_in.pc=-1;
         if(mem_out.pc!=-1){
             // mem out always goes to wb
@@ -344,24 +385,60 @@ public:
 
         }
       
-        if_out.pc=-1;id_out.pc=-1;ex_out.pc=-1;mem_out.pc=-1;
-        std::vector<int> temp;
-        // std::cout<<stalled<<std::endl;
-        if(4*inst.size()>pc_global){
-            temp.push_back(pc_global);
-            
-            instruction_fetch();
-            pc_global+=4;
+        bool no_if_thiscycle=false;
+        bool id_has_branch=false;
+        if(id_in.pc!=-1 && extract(id_in.machinecode,0,6)==99){
+            id_has_branch=true;
+        }
+
+
+    if(if_out.pc==-1){
+        if(pc_global>=4*input.size()){
+            no_if_thiscycle=true;
         }
         else{
-            temp.push_back(-1);
+            if(id_has_branch){
+                no_if_thiscycle=true;
+            }
+            else{
+                instruction_fetch();
+                temp.push_back(pc_global);
+                pc_global+=4;
+            }
+            
         }
+    }
+    else{
+        if(stalled){
+            no_if_thiscycle=false;
+            temp.push_back(if_out.pc);
+        }
+        else{
+            if(id_has_branch){
+                no_if_thiscycle=true;
+            }
+            else if(pc_global>=4*input.size()){
+                no_if_thiscycle=true;
+            }
+            else{
+                instruction_fetch();
+                temp.push_back(pc_global);
+                pc_global+=4;
+            }
+        }
+    }
+    if(no_if_thiscycle){
+        temp.push_back(-1);
+        if_out.pc=-1;
+    }
 
-        if(id_in.pc!=-1){instruction_decode();temp.push_back(id_in.pc);}else{id_out.pc=-1;temp.push_back(-1);}
-        if(ex_in.pc!=-1){execution_stage();temp.push_back(ex_in.pc);}else{ex_out.pc=-1;temp.push_back(-1);}
-        if(mem_in.pc!=-1){memory_operation();temp.push_back(mem_in.pc);}else{mem_out.pc=-1;temp.push_back(-1);}
-        if(wb_in.pc!=-1){write_back();temp.push_back(wb_in.pc);}else{wb_in.pc=-1;temp.push_back(-1);}
 
+        id_out.pc=-1;ex_out.pc=-1;mem_out.pc=-1;
+        if(id_in.pc!=-1){instruction_decode();}
+        if(ex_in.pc!=-1){execution_stage();}
+        if(mem_in.pc!=-1){memory_operation();}
+        if(wb_in.pc!=-1){write_back();}
+        temp.push_back(id_in.pc);temp.push_back(ex_in.pc);temp.push_back(mem_in.pc);temp.push_back(wb_in.pc);
         return temp;
         
     }
@@ -369,21 +446,21 @@ public:
 };
 
 
-// int main(){
+int main(){
 
-//     Processor p(read_file("../inputfiles/strlen.txt"));
-//     std::vector<int> temp=p.simulate_clock_cycle_forwarding();
-//     for(auto c:temp){
-//         std::cout<<c<<" ";
-//     }
-//     std::cout<<std::endl;
-//     for (int i = 0; i < 16; i++)
-//     {
-//         temp=p.simulate_clock_cycle_forwarding();
-//         for(auto c:temp){
-//             std::cout<<c<<" ";
-//         }
-//         std::cout<<std::endl;
-//     }
+    Processor p(read_file("../inputfiles/strlen.txt"));
+    std::vector<int> temp=p.simulate_clock_cycle_forwarding();
+    for(auto c:temp){
+        std::cout<<c<<" ";
+    }
+    std::cout<<std::endl;
+    for (int i = 0; i < 16; i++)
+    {
+        temp=p.simulate_clock_cycle_forwarding();
+        for(auto c:temp){
+            std::cout<<c<<" ";
+        }
+        std::cout<<std::endl;
+    }
     
-// }
+}
