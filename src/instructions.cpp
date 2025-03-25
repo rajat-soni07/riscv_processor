@@ -181,7 +181,7 @@ public:
             // std::cout << "imm4_1: " << std::bitset<4>(imm4_1) << std::endl;
             imm=(imm12<<10)+(imm10_5<<4)+(imm4_1);
             // std::cout << "imm: " << std::bitset<11>(imm) << std::endl;
-            std::cout<<imm<<std::endl;
+            // std::cout<<imm<<std::endl;
             imm = extract_signed(imm,0,10);
             imm*=2;
             if(funct3==0){
@@ -237,13 +237,13 @@ public:
 };
 
 
-int main(){
-    Instruction ins;
-    ins.build_instruction(0xfe000ce3);
-    std::cout<<ins.operation<<std::endl;
-    std::cout<<ins.reg1<<std::endl;
-    std::cout<<ins.reg2<<std::endl;
-    std::cout<<ins.rd<<std::endl;
-    std::cout<<ins.imm<<std::endl;
-    return 0;
-}
+// int main(){
+//     Instruction ins;
+//     ins.build_instruction(0xff4000e7);
+//     std::cout<<ins.operation<<std::endl;
+//     std::cout<<ins.reg1<<std::endl;
+//     std::cout<<ins.reg2<<std::endl;
+//     std::cout<<ins.rd<<std::endl;
+//     std::cout<<ins.imm<<std::endl;
+//     return 0;
+// }
