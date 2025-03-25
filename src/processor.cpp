@@ -172,6 +172,7 @@ public:
             else if (op=="srai"){ex_out.data = a>>im;}
             else if (op=="ori"){ex_out.data = a|im;}
             else if (op=="andi"){ex_out.data = a&im;}
+            break;
         
         case 3:
             if (op=="lb"){ex_out.data = a+im;}
@@ -221,7 +222,9 @@ public:
             if (op=="sb"){mem.save_byte(mem_in.data,mem_in.store_value);}
             else if (op=="sh"){mem.save_half(mem_in.data,mem_in.store_value);}
             else if (op=="sw"){mem.save_word(mem_in.data,mem_in.store_value);}
+            break;
         default:
+        mem_out.data = mem_in.data; //for ALU insturctions
             break;
         }
         return;
@@ -454,7 +457,7 @@ int main(){
         std::cout<<c<<" ";
     }
     std::cout<<std::endl;
-    for (int i = 0; i < 16; i++)
+    for (int i = 0; i < 5; i++)
     {
         temp=p.simulate_clock_cycle_forwarding();
         for(auto c:temp){

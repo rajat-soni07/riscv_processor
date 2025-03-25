@@ -1,7 +1,15 @@
 #include <iostream>
-
+#include <bitset>
 int extract(int n, int i, int j) {
     return (((1 << (j - i + 1)) - 1) & (n >> i));
+}
+
+int extract_signed(int n, int i, int j) {
+    int val = extract(n, i, j);
+    if (val & (1 << (j - i))) {
+        val = val - (1 << (j - i + 1));
+    }
+    return val;
 }
 class Instruction{
 
@@ -71,7 +79,7 @@ public:
         }
         else if(opcode==19){
             //I type
-            int imm11_0=extract(code,20,31);
+            int imm11_0=extract_signed(code,20,31);
             int rs1=extract(code,15,19);
             int funct3=extract(code,12,14);
             rd=extract(code,7,11);
@@ -111,7 +119,7 @@ public:
         }
         else if(opcode==3){
             //I type
-            int imm11_0=extract(code,20,31);
+            int imm11_0=extract_signed(code,20,31);
             int rs1=extract(code,15,19);
             int funct3=extract(code,12,14);
             rd=extract(code,7,11);
@@ -145,6 +153,7 @@ public:
             reg1=rs1;
             reg2=rs2;
             imm=(imm11_5<<5)+imm4_0;
+            imm = extract_signed(imm,0,11);
             if(funct3==0){
                 operation="sb";
             }
@@ -167,8 +176,14 @@ public:
             rd=-1;
             reg1=rs1;
             reg2=rs2;
-            imm=(imm12<<12)+(imm10_5<<5)+imm4_1;
-            // imm*=2;
+            // std::cout << "imm12: " << std::bitset<1>(imm12) << std::endl;
+            // std::cout << "imm10_5: " << std::bitset<6>(imm10_5) << std::endl;
+            // std::cout << "imm4_1: " << std::bitset<4>(imm4_1) << std::endl;
+            imm=(imm12<<10)+(imm10_5<<4)+(imm4_1);
+            // std::cout << "imm: " << std::bitset<11>(imm) << std::endl;
+            std::cout<<imm<<std::endl;
+            imm = extract_signed(imm,0,10);
+            imm*=2;
             if(funct3==0){
                 operation="beq";
             }
@@ -199,12 +214,14 @@ public:
             reg1=-1;
             reg2=-1;
             imm=(imm20<<19)+(imm19_12<<11)+(imm11<<10)+(imm10_1);
+            imm = extract_signed(imm,0,19);
             imm*=2; // since the incremeent can only be even, bits are shifted left by 1
             operation="jal";
 
         }
         else if(opcode==103){
-            int imm11_0=extract(code,20,31);
+            int imm11_0=extract_signed(code,20,31);
+            imm11_0=signed(imm11_0);
             int rs1=extract(code,15,19);
             int funct3=extract(code,12,14);
             rd=extract(code,7,11);
@@ -220,12 +237,13 @@ public:
 };
 
 
-// int main(){
-//     Instruction ins(0x00a28333);
-//     std::cout<<ins.operation<<std::endl;
-//     std::cout<<ins.reg1<<std::endl;
-//     std::cout<<ins.reg2<<std::endl;
-//     std::cout<<ins.rd<<std::endl;
-//     std::cout<<ins.imm<<std::endl;
-//     return 0;
-// }
+int main(){
+    Instruction ins;
+    ins.build_instruction(0xfe000ce3);
+    std::cout<<ins.operation<<std::endl;
+    std::cout<<ins.reg1<<std::endl;
+    std::cout<<ins.reg2<<std::endl;
+    std::cout<<ins.rd<<std::endl;
+    std::cout<<ins.imm<<std::endl;
+    return 0;
+}
