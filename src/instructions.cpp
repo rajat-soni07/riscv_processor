@@ -237,13 +237,13 @@ public:
 };
 
 
-int main(){
-    Instruction ins;
-    ins.build_instruction(0xfe000ce3);
-    std::cout<<ins.operation<<std::endl;
-    std::cout<<ins.reg1<<std::endl;
-    std::cout<<ins.reg2<<std::endl;
-    std::cout<<ins.rd<<std::endl;
-    std::cout<<ins.imm<<std::endl;
-    return 0;
-}
+// int main(){
+//     Instruction ins;
+//     ins.build_instruction(0xff4000e7);
+//     std::cout<<ins.operation<<std::endl;
+//     std::cout<<ins.reg1<<std::endl;
+//     std::cout<<ins.reg2<<std::endl;
+//     std::cout<<ins.rd<<std::endl;
+//     std::cout<<ins.imm<<std::endl;
+//     return 0;
+// }
