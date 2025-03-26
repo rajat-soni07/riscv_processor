@@ -1,6 +1,6 @@
 all:
-	g++ nonforwarding.cpp -o noforward
-	g++ forwarding.cpp -o forward
+	g++ -DMODE=0 display.cpp -o noforward
+	g++ -DMODE=1 display.cpp -o forward
 
 clean:
 	rm -f noforward forward
