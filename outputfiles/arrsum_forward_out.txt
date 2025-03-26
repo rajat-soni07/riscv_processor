@@ -1,0 +1,11 @@
+              ; 0   ; 1   ; 2   ; 3   ; 4   ; 5   ; 6   ; 7   ; 8   ; 9   
+addi x5 x0 0  ; IF  ; ID  ; EX  ; MEM ; WB  ;     ;     ;     ;     ;     
+addi x6 x0 0  ;     ; IF  ; ID  ; EX  ; MEM ; WB  ;     ;     ;     ;     
+bge x6 x11 28 ;     ;     ; IF  ; ID  ; -   ; EX  ; MEM ; WB  ;     ;     
+slli x7 x6 2  ;     ;     ;     ;     ;     ;     ;     ;     ;     ;     
+add x7 x10 x7 ;     ;     ;     ;     ;     ;     ;     ;     ;     ;     
+lw x7 0 x7    ;     ;     ;     ;     ;     ;     ;     ;     ;     ;     
+add x5 x5 x7  ;     ;     ;     ;     ;     ;     ;     ;     ;     ;     
+addi x6 x6 1  ;     ;     ;     ;     ;     ;     ;     ;     ;     ;     
+jal x0 -24    ;     ;     ;     ;     ;     ;     ;     ;     ;     ;     
+addi x10 x5 0 ;     ;     ;     ;     ;     ; IF  ; ID  ; EX  ; MEM ; WB  

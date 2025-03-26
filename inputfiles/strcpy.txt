@@ -1,0 +1,6 @@
+    0:        00058283        lb x5 0 x11
+    4:        00550023        sb x5 0 x10
+    8:        00028863        beq x5 x0 16
+    c:        00150513        addi x10 x10 1
+    10:        00158593        addi x11 x11 1
+    14:        fedff06f        jal x0 -20 <stringcopy>

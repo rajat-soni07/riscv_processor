@@ -1,0 +1,14 @@
+    0:        00000293        addi x5 x0 0
+    4:        00100313        addi x6 x0 1
+    8:        02b35663        bge x6 x11 44
+    c:        00331e13        slli x28 x6 3
+    10:        01c50e33        add x28 x10 x28
+    14:        ffce2e83        lw x29 -4 x28
+    18:        000e2f03        lw x30 0 x28
+    1c:        01df5863        bge x30 x29 16
+    20:        00100293        addi x5 x0 1
+    24:        01de2023        sw x29 0 x28
+    28:        ffee2e23        sw x30 -4 x28
+    2c:        00130313        addi x6 x6 1
+    30:        fd9ff06f        jal x0 -40
+    34:        fc0296e3        bne x5 x0 -52 <bubsort>
