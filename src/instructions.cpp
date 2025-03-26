@@ -51,12 +51,6 @@ public:
             else if(funct3==1){
                 operation="sll";
             }
-            else if(funct3==2){
-                operation="slt";
-            }
-            else if(funct3==3){
-                operation="sltu";
-            }
             else if(funct3==4){
                 if(funct7==1){
                     operation="div";
