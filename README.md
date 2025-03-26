@@ -42,25 +42,24 @@ This project implements a 5-stage pipelined processor for the RISC-V instruction
 ## Design Decisions 
 ### Repository Structure
 - `src/`: Contains the source code for the processor.
-    - `display.cpp`: Printing the pipeline diagram to `../outputfiles/` .
-    - `processor.cpp`: Implements the pipelining logic for forwarding and non-forwarding type processors in the Processor class.
-    - `registers.cpp`: Contains Register class that acts as a register file for the processor unit.
-    - `memory.cpp`: Contains Memory class that acts as a memory unit for the processor unit. 
-    - `instructions.cpp`: Decodes the machine code given.
-    - `input.cpp`: For reading the instructions from the given `.txt` file
-    - `Makefile`: Build script for the project.
-        - Targets:
-            - `all`: Generate binaries for both forwarding and non-forwarding type processors.
-            - `test`: Runs the compiled binaries for all the input files in `../inputfiles/`.
-            - `clean`: Removes compiled files.
+    - `display.cpp`: Printing the pipeline diagram to `../outputfiles/` .
+    - `processor.cpp`: Implements the pipelining logic for forwarding and non-forwarding type processors in the Processor class.
+    - `registers.cpp`: Contains Register class that acts as a register file for the processor unit.
+    - `memory.cpp`: Contains Memory class that acts as a memory unit for the processor unit. 
+    - `instructions.cpp`: Decodes the machine code given.
+    - `input.cpp`: For reading the instructions from the given `.txt` file
+    - `Makefile`: Build script for the project.
+        - `all`: Generate binaries for both forwarding and non-forwarding type processors.
+        - `test`: Runs the compiled binaries for all the input files in `../inputfiles/`.
+        - `clean`: Removes compiled files.
 - `inputfiles/` - Contains test cases for the processor
-    - `fib.txt` : Instructions for calculating Fibbonaci(5).
-    - `loop.txt`: Instructions for demonstrating a simple loop.
-    - `arrsum.txt`: Instructions for calculating the sum of an array.
-    - `bubblesort.txt`: Instructions for performing bubble sort on an array.
-    - `strcpy.txt`: Instructions for copying a string.
-    - `strlen.txt`: Instructions for calculating the length of a string.
-    - `strncpy.txt`: Instructions for copying a string upto a specified length.
+    - `fib.txt` : Instructions for calculating Fibbonaci(5).
+    - `loop.txt`: Instructions for demonstrating a simple loop.
+    - `arrsum.txt`: Instructions for calculating the sum of an array.
+    - `bubblesort.txt`: Instructions for performing bubble sort on an array.
+    - `strcpy.txt`: Instructions for copying a string.
+    - `strlen.txt`: Instructions for calculating the length of a string.
+    - `strncpy.txt`: Instructions for copying a string upto a specified length.
 - `outputfiles/` : Contains the pipeline diagrams (forwarding and non-forwarding) for all test cases in `inputfiles/`
 - `README.md`: Documentation for the project.
 
@@ -73,13 +72,13 @@ This project implements a 5-stage pipelined processor for the RISC-V instruction
 
 ### Register File and Memory Unit Design
 - Register File
-    - The `Register` class encapsulates the register file (implemented using an array of 32 integers), providing methods to read and write register values.
-    - Special care is taken to handle the zero register (`x0`), which always holds the value `0` and cannot be modified.
+    - The `Register` class encapsulates the register file (implemented using an array of 32 integers), providing methods to read and write register values.
+    - Special care is taken to handle the zero register (`x0`), which always holds the value `0` and cannot be modified.
 
 - Memory Unit
-    - The `Memory` class models the memory unit, supporting both read and write operations.
-    - It is designed to handle byte-addressable memory, ensuring compatibility with the RISC-V ISA. It uses `hashmap` to store values at each byte.
-    - Default values of all memory addresses is set to `0`.
+    - The `Memory` class models the memory unit, supporting both read and write operations.
+    - It is designed to handle byte-addressable memory, ensuring compatibility with the RISC-V ISA. It uses `hashmap` to store values at each byte.
+    - Default values of all memory addresses is set to `0`.
 ### Instructions supported
 - **R-Type Instructions**: `add`, `sub`, `mul`, `sll`, `xor`, `div`, `srl`, `sra`, `or`, `rem`, `and`
 - **I-Type Instructions**: `addi`, `slli`, `slti`, `sltiu`, `xori`, `srli`, `srai`, `ori`, `andi`
