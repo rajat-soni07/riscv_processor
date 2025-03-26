@@ -1,0 +1,3 @@
+    0:        00750513        addi x10 x10 7
+    4:        fff50513        addi x10 x10 -1
+    8:        fe051ee3        bne x10 x0 -4 <loop>
