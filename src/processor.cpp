@@ -123,11 +123,16 @@ public:
             
             }
         }
-        else{
-            pc_global+=0;
-        }
+        else if(opcode==103){
+            // jalr
+            pc_global = id_out.source1 + id_out.inst.imm;
          return;   
         }
+        else if(opcode==111){
+            // jal
+            pc_global = id_in.pc + id_out.inst.imm;
+            return;
+        }}
        
     
 
@@ -194,10 +199,10 @@ public:
             break;
 
         case 111:
-            if (op=="jal"){ex_out.data = im;}
+            if (op=="jal"){ex_out.data = ex_in.pc +4;}
             break;
         case 103:
-            if (op=="jalr"){ex_out.data = a+im;}
+            if (op=="jalr"){ex_out.data = ex_in.pc +4;}
             break;
         default:
             break;
@@ -284,7 +289,7 @@ public:
         }
         bool no_if_thiscycle=false;
         bool id_has_branch=false;
-        if(id_in.pc!=-1 && extract(id_in.machinecode,0,6)==99){
+        if(id_in.pc!=-1 && (extract(id_in.machinecode,0,6)==99 || extract(id_in.machinecode,0,6)==103 || extract(id_in.machinecode,0,6)==111)){
             id_has_branch=true;
         }
 
@@ -357,7 +362,7 @@ public:
 
 
         int rs1 = id_out.inst.reg1; int rs2 = id_out.inst.reg2;
-        if(extract(id_out.machinecode,0,6)==99){
+        if(extract(id_out.machinecode,0,6)==99 || extract(id_out.machinecode,0,6)==103 || extract(id_out.machinecode,0,6)==111){
             // if branch instruction can't use correct values in ID,stall
             if(ex_out.pc!=-1 && ((rs1!=-1 && rs1==ex_out.inst.rd)||(rs2!=-1 && rs2==ex_out.inst.rd) && ((extract(ex_out.machinecode,0,6)==19) || ((extract(ex_out.machinecode,0,6)==51)) || ((extract(ex_out.machinecode,0,6)==3))))){
                 stalled = true;
@@ -419,7 +424,7 @@ public:
       
         bool no_if_thiscycle=false;
         bool id_has_branch=false;
-        if(id_in.pc!=-1 && extract(id_in.machinecode,0,6)==99){
+        if(id_in.pc!=-1 && (extract(id_in.machinecode,0,6)==99 || extract(id_in.machinecode,0,6)==103 || extract(id_in.machinecode,0,6)==111)){
             id_has_branch=true;
         }
 
