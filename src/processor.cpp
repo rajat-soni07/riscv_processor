@@ -423,9 +423,10 @@ public:
 
            }
             if((rs1!=-1 && rs1==ex_out.inst.rd)||(rs2!=-1 && rs2==ex_out.inst.rd)){
+                if (ex_out.inst.operation!="lw" && ex_out.inst.operation!="lh" && ex_out.inst.operation!="lb" && ex_out.inst.operation!="lhu"){
                 if((rs1!=-1 && rs1==ex_out.inst.rd)){id_out.source1=ex_out.data;}
                 else{id_out.source2=ex_out.data;}
-
+                }
             }
 
             ex_in=id_out;
@@ -442,7 +443,8 @@ public:
             reg.update_from_ind(mem_out.inst.rd,mem_out.data);
         }
         if(ex_out.pc!=-1 && ex_out.inst.rd!=-1){
-            reg.update_from_ind(ex_out.inst.rd,ex_out.data);
+            if (ex_out.inst.operation!="lw" && ex_out.inst.operation!="lh" && ex_out.inst.operation!="lb" && ex_out.inst.operation!="lhu"){
+            reg.update_from_ind(ex_out.inst.rd,ex_out.data);}
         }
 
     }
