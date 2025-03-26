@@ -372,20 +372,23 @@ public:
                     reg.update_from_ind(ex_out.inst.rd,ex_out.data);
                 }
             }
-            else if(mem_out.pc!=-1 && (((rs1!=-1 && rs1==mem_out.inst.rd)||(rs2!=-1 && rs2==mem_out.inst.rd)) && ((extract(mem_out.machinecode,0,6)==3)))){
+            if(mem_out.pc!=-1 && (((rs1!=-1 && rs1==mem_out.inst.rd)||(rs2!=-1 && rs2==mem_out.inst.rd)) && ((extract(mem_out.machinecode,0,6)==3)))){
                 stalled = true;
                 id_in.machinecode=id_out.machinecode;
                 id_in.pc=id_out.pc;
 
-                    reg.update_from_ind(mem_out.inst.rd,mem_out.data);
+                reg.update_from_ind(mem_out.inst.rd,mem_out.data);
 
             }
-            else{
+            if(stalled==false){
+                id_in=if_out;
                 ex_in=id_out;
             }
+            //id in is decided
+
 
         }
-        else if(ex_out.pc!=-1 && ((rs1!=-1 && rs1==ex_out.inst.rd)||(rs2!=-1 && rs2==ex_out.inst.rd))){
+        else{ if(ex_out.pc!=-1 && ((rs1!=-1 && rs1==ex_out.inst.rd)||(rs2!=-1 && rs2==ex_out.inst.rd))){
             if(ex_out.inst.operation=="lw" || ex_out.inst.operation=="lh" || ex_out.inst.operation=="lb" || ex_out.inst.operation=="lhu"){
                 stalled = true;
                 id_in.machinecode=id_out.machinecode;
@@ -401,26 +404,39 @@ public:
         }
 
         if(stalled==false){
+            //TO forward values to id_out
             
             int rs1=id_out.inst.reg1; int rs2=id_out.inst.reg2;
             if((rs1!=-1 && rs1==ex_out.inst.rd)||(rs2!=-1 && rs2==ex_out.inst.rd)){
                 if((rs1!=-1 && rs1==ex_out.inst.rd)){id_out.source1=ex_out.data;}
                 else{id_out.source2=ex_out.data;}
-                ex_in=id_out;
 
             }
-            else if((rs1!=-1 && rs1==mem_out.inst.rd)||(rs2!=-1 && rs2==mem_out.inst.rd)){
+             if((rs1!=-1 && rs1==mem_out.inst.rd)||(rs2!=-1 && rs2==mem_out.inst.rd)){
                 if((rs1!=-1 && rs1==mem_out.inst.rd)){id_out.source1=mem_out.data;}
                 else{id_out.source2=mem_out.data;}
-                ex_in=id_out;
+
             }
-            else{
-                ex_in=id_out;
-            }
+
+            ex_in=id_out;
+
 
             id_in=if_out;
 
         }
+    }
+
+    if(stalled==false && (extract(id_in.machinecode,0,6) ==99 || extract(id_in.machinecode,0,6)==103 || extract(id_in.machinecode,0,6)==111)){
+        //new(unstalled) branch instruction in id
+        if(mem_out.inst.rd!=-1){
+            reg.update_from_ind(mem_out.inst.rd,mem_out.data);
+        }
+        if(ex_out.inst.rd!=-1){
+            reg.update_from_ind(ex_out.inst.rd,ex_out.data);
+        }
+
+    }
+
       
         bool no_if_thiscycle=false;
         bool id_has_branch=false;
@@ -499,5 +515,7 @@ public:
 //         }
 //         std::cout<<std::endl;
 //     }
+
+//     int x;
     
 // }
