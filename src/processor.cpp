@@ -145,6 +145,7 @@ public:
         int dest = ex_in.inst . rd;
         int a = ex_in.source1;
         int b = ex_in.source2;
+        
         int im = ex_in.inst .imm;
         switch (opcode)
         {
@@ -152,6 +153,8 @@ public:
             if (op=="add"){ex_out.data = a+b;}
             else if (op=="add"){ex_out.data = a+b;}
             else if (op=="sub"){ex_out.data = a-b;}
+            else if (op=="div"){ex_out.data = a/b;}
+            else if (op=="mul"){ex_out.data = a*b;}
             else if (op=="sll"){ex_out.data = a<<b;}
             else if (op=="slt"){ex_out.data = a<b;}
             else if (op=="sltu"){unsigned int c = ((unsigned int) a);
@@ -208,6 +211,10 @@ public:
             break;
         }
 
+        if (dest==0){
+           ex_out.data = 0;
+        }
+
         return;
     }
 
@@ -233,6 +240,9 @@ public:
         default:
         mem_out.data = mem_in.data; //for ALU insturctions
             break;
+        }
+        if (mem_in.inst.rd==0){
+            mem_out.data = 0;
         }
         return;
     }
@@ -364,14 +374,6 @@ public:
         int rs1 = id_out.inst.reg1; int rs2 = id_out.inst.reg2;
         if(extract(id_out.machinecode,0,6)==99 || extract(id_out.machinecode,0,6)==103 || extract(id_out.machinecode,0,6)==111){
             // if branch instruction can't use correct values in ID,stall
-            if(ex_out.pc!=-1 && ((rs1!=-1 && rs1==ex_out.inst.rd)||(rs2!=-1 && rs2==ex_out.inst.rd) && ((extract(ex_out.machinecode,0,6)==19) || ((extract(ex_out.machinecode,0,6)==51)) || ((extract(ex_out.machinecode,0,6)==3))))){
-                stalled = true;
-                id_in.machinecode=id_out.machinecode;
-                id_in.pc=id_out.pc;
-                if((extract(ex_out.machinecode,0,6)==19) || ((extract(ex_out.machinecode,0,6)==51)) ){
-                    reg.update_from_ind(ex_out.inst.rd,ex_out.data);
-                }
-            }
             if(mem_out.pc!=-1 && (((rs1!=-1 && rs1==mem_out.inst.rd)||(rs2!=-1 && rs2==mem_out.inst.rd)) && ((extract(mem_out.machinecode,0,6)==3)))){
                 stalled = true;
                 id_in.machinecode=id_out.machinecode;
@@ -379,6 +381,14 @@ public:
 
                 reg.update_from_ind(mem_out.inst.rd,mem_out.data);
 
+            }
+            if(ex_out.pc!=-1 && ((rs1!=-1 && rs1==ex_out.inst.rd)||(rs2!=-1 && rs2==ex_out.inst.rd) && ((extract(ex_out.machinecode,0,6)==19) || ((extract(ex_out.machinecode,0,6)==51)) || ((extract(ex_out.machinecode,0,6)==3))))){
+                stalled = true;
+                id_in.machinecode=id_out.machinecode;
+                id_in.pc=id_out.pc;
+                if((extract(ex_out.machinecode,0,6)==19) || ((extract(ex_out.machinecode,0,6)==51)) ){
+                    reg.update_from_ind(ex_out.inst.rd,ex_out.data);
+                }
             }
             if(stalled==false){
                 id_in=if_out;
@@ -407,14 +417,14 @@ public:
             //TO forward values to id_out
             
             int rs1=id_out.inst.reg1; int rs2=id_out.inst.reg2;
+            if((rs1!=-1 && rs1==mem_out.inst.rd)||(rs2!=-1 && rs2==mem_out.inst.rd)){
+               if((rs1!=-1 && rs1==mem_out.inst.rd)){id_out.source1=mem_out.data;}
+               else{id_out.source2=mem_out.data;}
+
+           }
             if((rs1!=-1 && rs1==ex_out.inst.rd)||(rs2!=-1 && rs2==ex_out.inst.rd)){
                 if((rs1!=-1 && rs1==ex_out.inst.rd)){id_out.source1=ex_out.data;}
                 else{id_out.source2=ex_out.data;}
-
-            }
-             if((rs1!=-1 && rs1==mem_out.inst.rd)||(rs2!=-1 && rs2==mem_out.inst.rd)){
-                if((rs1!=-1 && rs1==mem_out.inst.rd)){id_out.source1=mem_out.data;}
-                else{id_out.source2=mem_out.data;}
 
             }
 
@@ -428,10 +438,10 @@ public:
 
     if(stalled==false && (extract(id_in.machinecode,0,6) ==99 || extract(id_in.machinecode,0,6)==103 || extract(id_in.machinecode,0,6)==111)){
         //new(unstalled) branch instruction in id
-        if(mem_out.inst.rd!=-1){
+        if(mem_out.pc!=-1 && mem_out.inst.rd!=-1){
             reg.update_from_ind(mem_out.inst.rd,mem_out.data);
         }
-        if(ex_out.inst.rd!=-1){
+        if(ex_out.pc!=-1 && ex_out.inst.rd!=-1){
             reg.update_from_ind(ex_out.inst.rd,ex_out.data);
         }
 
@@ -516,6 +526,6 @@ public:
 //         std::cout<<std::endl;
 //     }
 
-//     int x;
+//     return 0;
     
 // }

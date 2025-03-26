@@ -40,6 +40,9 @@ public:
 
     void update_from_ind(int i,int val){
         if (i>=0 && i<32){
+            if (i==0){
+                return;
+            }
             reg[i] = val;
         }
         else{

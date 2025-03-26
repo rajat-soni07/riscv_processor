@@ -36,9 +36,13 @@ public:
             rd=extract(code,7,11);
             reg1=rs1;
             reg2=rs2;
+            
             if(funct3==0){
                 if(funct7==0){
                     operation="add";
+                }
+                else if(funct7==1){
+                    operation="mul";
                 }
                 else{
                     operation="sub";
@@ -54,7 +58,9 @@ public:
                 operation="sltu";
             }
             else if(funct3==4){
-                operation="xor";
+                if(funct7==1){
+                    operation="div";
+                }else if (funct7==0){operation="xor";}
             }
             else if(funct3==5){
                 if(funct7==0){
@@ -68,6 +74,7 @@ public:
                 if(funct7==0){
                     operation="or";
                 }
+                
                 else{
                     operation="rem";
                 }

@@ -41,9 +41,9 @@ int main(int argc, char const *argv[])
                     output[temp[j]/4][i] = "-  ";
                 }else{
                     output[temp[j]/4][i] = labels[j];
+                    last[temp[j]/4] = j;
                 }
             }
-            last[temp[j]/4] = j;
         }
         
        
