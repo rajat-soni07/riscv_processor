@@ -72,7 +72,7 @@ This project implements a 5-stage pipelined processor for the RISC-V instruction
 
 ### Register File and Memory Unit Design
 - Register File
-    - The `Register` class encapsulates the register file (implemented using an array of 32 integers), providing methods to read and write register values.
+    - The `Register` class encapsulates the register file (implemented using an array of 32 integers *initialised with zero*), providing methods to read and write register values.
     - Special care is taken to handle the zero register (`x0`), which always holds the value `0` and cannot be modified.
 
 - Memory Unit
