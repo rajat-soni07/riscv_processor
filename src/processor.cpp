@@ -76,6 +76,9 @@ public:
         
 
     }
+    void print_register(){
+        reg.print_registers();
+    }
 
     void instruction_fetch(){
         if_out.machinecode=std::stoll("0x" + input[pc_global/4][0],nullptr,16);

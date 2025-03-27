@@ -71,4 +71,16 @@ public:
         
     }
 
+    void print_registers(){
+        std::cout << "--------------------------------" << std::endl;
+        std::cout << "| Register | Value             |" << std::endl;
+        std::cout << "--------------------------------" << std::endl;
+        for (int i = 0; i < 32; i++){
+            std::cout << "|    x" << i << std::string(6 - std::to_string(i).size(), ' ') 
+                      << "| " <<  reg[i] << std::string(17 - std::to_string(reg[i]).size(), ' ')
+                      << "|" << std::endl;
+        }
+        std::cout << "--------------------------------" << std::endl;
+    }
+
 };

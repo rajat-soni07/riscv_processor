@@ -117,5 +117,8 @@ int main(int argc, char const *argv[])
     }
     output_file.close();
     cout.rdbuf(cout_buf);
+
+    processor.print_register();
+
     return 0;
 }
